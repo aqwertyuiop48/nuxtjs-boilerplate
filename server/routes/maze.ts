@@ -206,7 +206,8 @@ export default defineEventHandler(() =>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.18/jquery.touchSwipe.min.js"></script>
         <script>
-(function(window, document, $) {
+var MazeApp = MazeApp || {};
+(function(app) {
   "use strict";
 
   var _canvas, _ctx, _sprite, _finishSprite, _currentMaze, _draw, _player, _cellSize, _difficulty;
@@ -246,17 +247,17 @@ export default defineEventHandler(() =>
 
   function displayVictoryMess(moveCount) {
     document.getElementById("moves").innerHTML = "You Moved " + moveCount + " Steps.";
-    toggleVisablity("Message-Container");
+    app.toggleVisablity("Message-Container");
   }
 
-  function toggleVisablity(id) {
+  app.toggleVisablity = function(id) {
     var el = document.getElementById(id);
     if (el.style.visibility === "visible") {
       el.style.visibility = "hidden";
     } else {
       el.style.visibility = "visible";
     }
-  }
+  };
 
   function MazeGen(w, h) {
     var _map;
@@ -561,7 +562,7 @@ export default defineEventHandler(() =>
 
     this.bindKeyDown = function() {
       window.addEventListener("keydown", check, false);
-      $("#view").swipe({
+      jQuery("#view").swipe({
         swipe: function(event, direction) {
           switch (direction) {
             case "up": check({ keyCode: 38 }); break;
@@ -576,14 +577,14 @@ export default defineEventHandler(() =>
 
     this.unbindKeyDown = function() {
       window.removeEventListener("keydown", check, false);
-      $("#view").swipe("destroy");
+      jQuery("#view").swipe("destroy");
     };
 
     _drawSprite(mazeInst.startCoord());
     this.bindKeyDown();
   }
 
-  function makeMaze() {
+  app.makeMaze = function() {
     if (_player) {
       _player.unbindKeyDown();
       _player = null;
@@ -595,14 +596,14 @@ export default defineEventHandler(() =>
     _draw = new MazeDrawer(_currentMaze, _ctx, _cellSize, _finishSprite);
     _player = new PlayerController(_currentMaze, _canvas, _cellSize, displayVictoryMess, _sprite);
     document.getElementById("mazeContainer").style.opacity = "100";
-  }
+  };
 
-  window.onload = function() {
+  app.init = function() {
     _canvas = document.getElementById("mazeCanvas");
     _ctx = _canvas.getContext("2d");
 
-    var viewWidth = $("#view").width();
-    var viewHeight = $("#view").height();
+    var viewWidth = jQuery("#view").width();
+    var viewHeight = jQuery("#view").height();
     if (viewHeight < viewWidth) {
       _ctx.canvas.width = viewHeight - viewHeight / 100;
       _ctx.canvas.height = viewHeight - viewHeight / 100;
@@ -615,7 +616,7 @@ export default defineEventHandler(() =>
     var completeTwo = false;
     var isComplete = function() {
       if (completeOne && completeTwo) {
-        setTimeout(function() { makeMaze(); }, 500);
+        setTimeout(function() { app.makeMaze(); }, 500);
       }
     };
 
@@ -638,9 +639,9 @@ export default defineEventHandler(() =>
     };
   };
 
-  window.onresize = function() {
-    var viewWidth = $("#view").width();
-    var viewHeight = $("#view").height();
+  app.resize = function() {
+    var viewWidth = jQuery("#view").width();
+    var viewHeight = jQuery("#view").height();
     if (viewHeight < viewWidth) {
       _ctx.canvas.width = viewHeight - viewHeight / 100;
       _ctx.canvas.height = viewHeight - viewHeight / 100;
@@ -655,10 +656,13 @@ export default defineEventHandler(() =>
     }
   };
 
-  window.makeMaze = makeMaze;
-  window.toggleVisablity = toggleVisablity;
+  window.onload = app.init;
+  window.onresize = app.resize;
 
-})(window, document, jQuery);
+})(MazeApp);
+
+function makeMaze() { MazeApp.makeMaze(); }
+function toggleVisablity(id) { MazeApp.toggleVisablity(id); }
         </script>
       </body>
     </html>
