@@ -253,7 +253,7 @@ export default defineEventHandler(() =>
       }
     }
     
-    function Maze(Width, Height) {
+    function MazeGenerator(Width, Height) {
       var mazeMap;
       var width = Width;
       var height = Height;
@@ -418,8 +418,8 @@ export default defineEventHandler(() =>
       defineMaze();
     }
     
-    function DrawMaze(Maze, ctx, cellsize, endSprite = null) {
-      var map = Maze.map();
+    function DrawMaze(mazeInstance, ctx, cellsize, endSprite = null) {
+      var map = mazeInstance.map();
       var cellSize = cellsize;
       var drawEndMethod;
       ctx.lineWidth = cellSize / 40;
@@ -470,7 +470,7 @@ export default defineEventHandler(() =>
       }
     
       function drawEndFlag() {
-        var coord = Maze.endCoord();
+        var coord = mazeInstance.endCoord();
         var gridSize = 4;
         var fraction = cellSize / gridSize - 2;
         var colorSwap = true;
@@ -500,7 +500,7 @@ export default defineEventHandler(() =>
       function drawEndSprite() {
         var offsetLeft = cellSize / 50;
         var offsetRight = cellSize / 25;
-        var coord = Maze.endCoord();
+        var coord = mazeInstance.endCoord();
         ctx.drawImage(
           endSprite,
           2,
@@ -529,7 +529,7 @@ export default defineEventHandler(() =>
       drawEndMethod();
     }
     
-    function Player(maze, c, _cellsize, onComplete, sprite = null) {
+    function Player(mazeObj, c, _cellsize, onComplete, sprite = null) {
       var ctx = c.getContext("2d");
       var drawSprite;
       var moves = 0;
@@ -538,10 +538,10 @@ export default defineEventHandler(() =>
         drawSprite = drawSpriteImg;
       }
       var player = this;
-      var map = maze.map();
+      var map = mazeObj.map();
       var cellCoords = {
-        x: maze.startCoord().x,
-        y: maze.startCoord().y
+        x: mazeObj.startCoord().x,
+        y: mazeObj.startCoord().y
       };
       var cellSize = _cellsize;
       var halfCellSize = cellSize / 2;
@@ -562,12 +562,12 @@ export default defineEventHandler(() =>
           2 * Math.PI
         );
         ctx.fill();
-        if (coord.x === maze.endCoord().x && coord.y === maze.endCoord().y) {
+        if (coord.x === mazeObj.endCoord().x && coord.y === mazeObj.endCoord().y) {
           onComplete(moves);
           player.unbindKeyDown();
         }
       }
-    
+
       function drawSpriteImg(coord) {
         var offsetLeft = cellSize / 50;
         var offsetRight = cellSize / 25;
@@ -582,7 +582,7 @@ export default defineEventHandler(() =>
           cellSize - offsetRight,
           cellSize - offsetRight
         );
-        if (coord.x === maze.endCoord().x && coord.y === maze.endCoord().y) {
+        if (coord.x === mazeObj.endCoord().x && coord.y === mazeObj.endCoord().y) {
           onComplete(moves);
           player.unbindKeyDown();
         }
@@ -695,8 +695,8 @@ export default defineEventHandler(() =>
         $("#view").swipe("destroy");
       };
     
-      drawSprite(maze.startCoord());
-    
+      drawSprite(mazeObj.startCoord());
+
       this.bindKeyDown();
     }
     
@@ -785,7 +785,7 @@ export default defineEventHandler(() =>
       var e = document.getElementById("diffSelect");
       difficulty = e.options[e.selectedIndex].value;
       cellSize = mazeCanvas.width / difficulty;
-      currentMaze = new Maze(difficulty, difficulty);
+      currentMaze = new MazeGenerator(difficulty, difficulty);
       draw = new DrawMaze(currentMaze, ctx, cellSize, finishSprite);
       player = new Player(currentMaze, mazeCanvas, cellSize, displayVictoryMess, sprite);
       if (document.getElementById("mazeContainer").style.opacity < "100") {
