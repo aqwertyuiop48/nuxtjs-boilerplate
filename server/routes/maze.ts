@@ -704,7 +704,7 @@ export default defineEventHandler(() =>
     var ctx = mazeCanvas.getContext("2d");
     var sprite;
     var finishSprite;
-    var maze, draw, player;
+    var currentMaze, draw, player;
     var cellSize;
     var difficulty;
     // sprite.src = 'media/sprite.png';
@@ -785,9 +785,9 @@ export default defineEventHandler(() =>
       var e = document.getElementById("diffSelect");
       difficulty = e.options[e.selectedIndex].value;
       cellSize = mazeCanvas.width / difficulty;
-      maze = new Maze(difficulty, difficulty);
-      draw = new DrawMaze(maze, ctx, cellSize, finishSprite);
-      player = new Player(maze, mazeCanvas, cellSize, displayVictoryMess, sprite);
+      currentMaze = new Maze(difficulty, difficulty);
+      draw = new DrawMaze(currentMaze, ctx, cellSize, finishSprite);
+      player = new Player(currentMaze, mazeCanvas, cellSize, displayVictoryMess, sprite);
       if (document.getElementById("mazeContainer").style.opacity < "100") {
         document.getElementById("mazeContainer").style.opacity = "100";
       }
