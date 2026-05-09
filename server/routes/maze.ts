@@ -206,6 +206,9 @@ export default defineEventHandler(() =>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.18/jquery.touchSwipe.min.js"></script>
         <script>
+          (function() {
+          "use strict";
+          
           function rand(max) {
       return Math.floor(Math.random() * max);
     }
@@ -793,6 +796,11 @@ export default defineEventHandler(() =>
       }
     }
     
+    // Expose functions to global scope for onclick handlers
+    window.makeMaze = makeMaze;
+    window.toggleVisablity = toggleVisablity;
+    
+    })();
         </script>
       </body>
     </html>
